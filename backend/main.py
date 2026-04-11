@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from .database import engine, Base
-from .routes import auth, teams, players, matches, scoring, stats
+from database import engine, Base
+from routes import auth, teams, players, matches, scoring, stats
 from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize the database

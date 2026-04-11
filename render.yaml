@@ -8,6 +8,8 @@ services:
     envVars:
       - key: DATABASE_URL
         value: sqlite:///./cricket_tournament.db
+      - key: PYTHONPATH
+        value: .
     # This is key: it tells Render to look in the backend subfolder
     rootDir: backend
 
@@ -17,5 +19,22 @@ services:
     runtime: static
     # Point to the frontend directory
     publishDir: frontend
-    # Since it's a static site, there's no build command
-    buildCommand: ""
+    # Simplified Routing for Clean URLs
+    routes:
+      - type: rewrite
+        source: /teams
+        destination: /teams.html
+      - type: rewrite
+        source: /players
+        destination: /players.html
+      - type: rewrite
+        source: /matches
+        destination: /matches.html
+      - type: rewrite
+        source: /admin
+        destination: /admin.html
+      - type: rewrite
+        source: /live
+        destination: /live.html
+      - type: fallback
+        destination: /index.html
