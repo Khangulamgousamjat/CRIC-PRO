@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRIC PRO | Players</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #0f172a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-gradient { background: linear-gradient(to right, #3b82f6, #8b5cf6); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold tracking-tight">CRIC <span class="text-blue-500">PRO</span></div>
+        <div class="space-x-8 hidden md:flex items-center">
+            <a href="index.html" class="hover:text-blue-400 transition">Home</a>
+            <a href="teams.html" class="hover:text-blue-400 transition">Teams</a>
+            <a href="players.html" class="text-blue-400 font-semibold border-b-2 border-blue-500 pb-1">Players</a>
+            <a href="matches.html" class="hover:text-blue-400 transition">Matches</a>
+            <a href="admin.html" class="bg-blue-600 px-5 py-2 rounded-full hover:bg-blue-700 transition">Admin Panel</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12">
+        <div class="flex flex-col md:flex-row justify-between items-start gap-12">
+            <!-- Player List -->
+            <div id="players-list-container" class="w-full">
+                <h1 class="text-4xl font-bold mb-8 italic text-blue-400">Registered Players</h1>
+                <div id="players-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <p class="text-gray-500">Loading players...</p>
+                </div>
+            </div>
+
+            <!-- Add Player Form (Admin Only) -->
+            <div id="admin-form-container" class="w-full md:w-1/3 glass p-8 rounded-3xl sticky top-24" style="display: none;">
+                <h2 class="text-2xl font-bold mb-6">Add New Player</h2>
+                <form id="add-player-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Player Name</label>
+                        <input type="text" id="player-name" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Role</label>
+                        <select id="player-role" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="Batsman">Batsman</option>
+                            <option value="Bowler">Bowler</option>
+                            <option value="All-rounder">All-rounder</option>
+                            <option value="Wicketkeeper">Wicketkeeper</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Team</label>
+                        <select id="team-select" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <!-- Team Options -->
+                        </select>
+                    </div>
+                    <p class="text-xs text-red-400" id="form-error"></p>
+                    <button type="submit" class="w-full btn-gradient py-3 rounded-xl font-bold hover:shadow-lg transition duration-300">Add Player</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import CONFIG from './config.js';
+
+        const token = localStorage.getItem('token');
+        const adminForm = document.getElementById('admin-form-container');
+        const listContainer = document.getElementById('players-list-container');
+
+        if (token && token !== "null" && token !== "undefined") {
+            adminForm.style.display = 'block';
+            listContainer.classList.add('md:w-2/3');
+            listContainer.classList.remove('w-full');
+        } else {
+            adminForm.style.display = 'none';
+            listContainer.classList.add('w-full');
+            listContainer.classList.remove('md:w-2/3');
+        }
+
+        async function init() {
+            try {
+                const teamResp = await fetch(`${CONFIG.API_BASE_URL}/teams/`);
+                const teams = await teamResp.json();
+                const teamSelect = document.getElementById('team-select');
+                teamSelect.innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('') || '<option value="">No Teams</option>';
+
+                // --- API GET PLAYERS ---
+                const playerResp = await fetch(`${CONFIG.API_BASE_URL}/players/`);
+                const players = await playerResp.json();
+                const grid = document.getElementById('players-grid');
+                grid.innerHTML = players.map(p => `
+                    <div class="glass p-6 rounded-2xl flex justify-between items-center border border-white/5 bg-white/5 group">
+                        <div class="flex items-center space-x-4">
+                            <div class="h-10 w-10 flex items-center justify-center bg-purple-500/10 rounded-xl text-xl">👤</div>
+                            <div>
+                                <h3 class="text-xl font-bold">${p.name}</h3>
+                                <p class="text-gray-400 text-sm">${p.role}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-blue-400 font-semibold text-xs bg-blue-500/10 px-3 py-1 rounded-full">ID: ${p.team_id}</div>
+                            ${token ? `<button onclick="deletePlayer(${p.id})" class="text-red-500 hover:text-red-400 transition opacity-0 group-hover:opacity-100 font-bold">✕ Tag</button>` : ''}
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-gray-500">No players registered yet.</p>';
+            } catch (err) { console.error(err); }
+        }
+
+        window.deletePlayer = async (id) => {
+            if (!confirm('Remove player from the tournament?')) return;
+            try {
+                const res = await fetch(`${CONFIG.API_BASE_URL}/players/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) init();
+            } catch (err) { console.error(err); }
+        };
+
+        document.getElementById('add-player-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('form-error');
+            
+            if (!token) {
+                errorEl.innerText = "Error: Admin token missing. Please login first.";
+                return;
+            }
+
+            const playerData = {
+                name: document.getElementById('player-name').value,
+                role: document.getElementById('player-role').value,
+                team_id: parseInt(document.getElementById('team-select').value)
+            };
+
+            try {
+                // --- API CREATE PLAYER ---
+                const res = await fetch(`${CONFIG.API_BASE_URL}/players/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(playerData)
+                });
+                if (res.ok) { document.getElementById('add-player-form').reset(); init(); }
+                else { errorEl.innerText = "Failed to add player."; }
+            } catch (err) { errorEl.innerText = "Connection error."; }
+        });
+
+        init();
+    </script>
+</body>
+</html>

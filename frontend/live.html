@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRIC PRO | Live Scoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #0f172a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-action { @apply bg-slate-800 border border-slate-700 py-3 px-6 rounded-2xl hover:bg-slate-700 transition font-bold text-center; }
+        .score-box { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid #3b82f6; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center mb-8">
+        <div class="text-2xl font-bold tracking-tight">CRIC <span class="text-blue-500">PRO</span></div>
+        <div class="space-x-8 hidden md:flex items-center">
+            <a href="index.html" class="hover:text-blue-400 transition">Home</a>
+            <a href="matches.html" class="hover:text-blue-400 transition">Matches</a>
+            <a href="admin.html" class="bg-blue-600 px-5 py-2 rounded-full hover:bg-blue-700 transition">Admin Panel</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 grid md:grid-cols-2 gap-8">
+        <!-- Dashboard / Scoreboard -->
+        <div class="space-y-6">
+            <div id="live-scoreboard" class="glass score-box p-12 rounded-[3rem] text-center shadow-2xl shadow-blue-500/10">
+                <div id="match-status" class="text-red-500 text-sm font-bold uppercase tracking-widest mb-4">LIVE • T20 CRICKET</div>
+                <div class="flex justify-around items-center mb-8">
+                    <div class="text-center">
+                        <div id="team1-name" class="text-xl font-bold text-gray-400">Team 1</div>
+                        <div id="team1-score" class="text-5xl font-black text-white mt-2">0/0</div>
+                        <div id="team1-overs" class="text-sm text-gray-500 mt-1">0.0 ov</div>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-700 italic">VS</div>
+                    <div class="text-center">
+                        <div id="team2-name" class="text-xl font-bold text-gray-400">Team 2</div>
+                        <div id="team2-score" class="text-5xl font-black text-white mt-2">0/0</div>
+                        <div id="team2-overs" class="text-sm text-gray-500 mt-1">0.0 ov</div>
+                    </div>
+                </div>
+                <div id="live-commentary" class="bg-black/20 p-4 rounded-2xl text-blue-400 font-mono text-sm">
+                    Waiting for the first ball...
+                </div>
+            </div>
+
+            <!-- Match Settings (Admin Only View) -->
+            <div class="glass p-8 rounded-3xl">
+                <h3 class="text-lg font-bold mb-4">Active Players Selection</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1 uppercase">Striker</label>
+                        <select id="batsman-id" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl focus:ring-blue-500 outline-none"></select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1 uppercase">Bowler</label>
+                        <select id="bowler-id" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl focus:ring-blue-500 outline-none"></select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1 uppercase">Non-Striker</label>
+                        <select id="nonstriker-id" class="w-full bg-slate-900/50 border border-slate-700 p-3 rounded-xl focus:ring-blue-500 outline-none"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scoring Panel (Admin Actions) -->
+        <div class="glass p-8 rounded-[3rem] space-y-8">
+            <h2 class="text-3xl font-bold flex items-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                ⚡ SCORING PANEL
+            </h2>
+
+            <div class="grid grid-cols-4 gap-4" id="runs-panel">
+                <button onclick="addBall(0)" class="btn-action hover:border-blue-500/50 hover:text-blue-400 transition duration-200">0</button>
+                <button onclick="addBall(1)" class="btn-action hover:border-blue-500 hover:text-blue-400 transition duration-200">1</button>
+                <button onclick="addBall(2)" class="btn-action hover:border-blue-500 hover:text-blue-400 transition duration-200">2</button>
+                <button onclick="addBall(3)" class="btn-action hover:border-blue-500 hover:text-blue-400 transition duration-200">3</button>
+                <button onclick="addBall(4)" class="btn-action bg-blue-600/10 border-blue-600 text-blue-500 hover:bg-blue-600 hover:text-white transition duration-200">4</button>
+                <button onclick="addBall(6)" class="btn-action bg-purple-600/10 border-purple-600 text-purple-500 hover:bg-purple-600 hover:text-white transition duration-200">6</button>
+                <button onclick="addBall(0, 1, 'wide')" class="btn-action text-yellow-500 border-yellow-500/30 hover:bg-yellow-500 hover:text-black mt-2">WD</button>
+                <button onclick="addBall(0, 1, 'noball')" class="btn-action text-yellow-500 border-yellow-500/30 hover:bg-yellow-500 hover:text-black mt-2">NB</button>
+            </div>
+
+            <div class="border-t border-white/5 pt-8">
+                <h3 class="text-xl font-bold text-red-500 mb-4">🚨 OUT!</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="addWicket('bowled')" class="bg-red-600/10 border border-red-500/50 text-red-500 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition">Bowled</button>
+                    <button onclick="addWicket('caught')" class="bg-red-600/10 border border-red-500/50 text-red-500 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition">Caught</button>
+                    <button onclick="addWicket('lbw')" class="bg-red-600/10 border border-red-500/50 text-red-500 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition">LBW</button>
+                    <button onclick="addWicket('runout')" class="bg-red-600/10 border border-red-500/50 text-red-500 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition">Run Out</button>
+                </div>
+            </div>
+
+            <div class="bg-black/40 p-4 rounded-xl text-center text-red-400 font-bold" id="panel-error"></div>
+        </div>
+    </main>
+
+    <script type="module">
+        import CONFIG from './config.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const matchId = params.get('match');
+        const token = localStorage.getItem('token');
+        let currentOver = 0;
+        let currentBall = 1;
+
+        async function updateScorecard() {
+            if (!matchId) return;
+            try {
+                const res = await fetch(`${CONFIG.API_BASE_URL}/scoring/live/${matchId}`);
+                const data = await res.json();
+                
+                const t1 = data.team1_score.split(' (');
+                const t2 = data.team2_score.split(' (');
+                
+                document.getElementById('team1-name').innerText = data.team1_name;
+                document.getElementById('team2-name').innerText = data.team2_name;
+                document.getElementById('team1-score').innerText = t1[0];
+                document.getElementById('team1-overs').innerText = t1[1].replace(')', '');
+                document.getElementById('team2-score').innerText = t2[0];
+                document.getElementById('team2-overs').innerText = t2[1].replace(')', '');
+                document.getElementById('match-status').innerText = `LIVE • INNINGS ${data.current_innings}`;
+
+                // Sync local state for scorer
+                const currentOversText = data.current_innings === 1 ? t1[1] : t2[1];
+                const parts = currentOversText.split(' ')[0].split('.');
+                const overVal = parseInt(parts[0]);
+                const ballVal = parseInt(parts[1]) || 0;
+
+                // Only sync if we are just starting or significantly behind (simple sync logic)
+                if (currentOver === 0 && currentBall === 1 && (overVal > 0 || ballVal > 0)) {
+                    currentOver = overVal;
+                    currentBall = ballVal + 1;
+                    if (currentBall > 6) { currentOver++; currentBall = 1; }
+                }
+            } catch (err) { console.error('Score Update Error:', err); }
+        }
+
+        async function loadPlayers() {
+            const playerResp = await fetch(`${CONFIG.API_BASE_URL}/players/`);
+            const players = await playerResp.json();
+            const selects = ['batsman-id', 'bowler-id', 'nonstriker-id'];
+            selects.forEach(id => {
+                document.getElementById(id).innerHTML = players.map(p => 
+                    `<option value="${p.id}">${p.name} (${p.role})</option>`
+                ).join('');
+            });
+        }
+
+        window.addBall = async (runs, extras = 0, extraType = null, isWicket = false, wicketType = null) => {
+            if (!token) { document.getElementById('panel-error').innerText = 'Please login to score.'; return; }
+            
+            const payload = {
+                match_id: parseInt(matchId),
+                over_no: currentOver,
+                ball_no: currentBall,
+                batsman_id: parseInt(document.getElementById('batsman-id').value),
+                bowler_id: parseInt(document.getElementById('bowler-id').value),
+                non_striker_id: parseInt(document.getElementById('nonstriker-id').value),
+                runs: runs,
+                extra_runs: extras,
+                extra_type: extraType,
+                is_wicket: isWicket,
+                wicket_type: wicketType
+            };
+
+            try {
+                // --- API SCORING BALL ---
+                const res = await fetch(`${CONFIG.API_BASE_URL}/scoring/ball`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    if (!extraType) {
+                        currentBall++;
+                        if (currentBall > 6) { currentOver++; currentBall = 1; }
+                    }
+                    updateScorecard();
+                    document.getElementById('live-commentary').innerText = `${currentOver}.${currentBall}: ${runs} runs${extraType ? ' ('+extraType+')' : ''}${isWicket ? ' - Wicket!' : ''}`;
+                    document.getElementById('panel-error').innerText = '';
+                } else {
+                    document.getElementById('panel-error').innerText = 'Backend error.';
+                }
+            } catch (err) { console.error(err); }
+        };
+
+        window.addWicket = (type) => addBall(0, 0, null, true, type);
+
+        if (matchId) {
+            updateScorecard();
+            loadPlayers();
+            setInterval(updateScorecard, 10000); // Polling for everyone
+        } else {
+            window.location.href = 'matches.html';
+        }
+    </script>
+</body>
+</html>
