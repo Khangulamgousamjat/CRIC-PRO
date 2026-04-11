@@ -1,3 +1,12 @@
+import sys
+import os
+from pathlib import Path
+
+# Add the current directory to sys.path to ensure modules are found
+current_dir = Path(__file__).resolve().parent
+if str(current_dir) not in sys.path:
+    sys.path.append(str(current_dir))
+
 from fastapi import FastAPI
 from database import engine, Base
 from routes import auth, teams, players, matches, scoring, stats
