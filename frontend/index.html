@@ -14,6 +14,7 @@
         .bg-gradient-main { background: radial-gradient(circle at top left, #3b82f6, transparent), radial-gradient(circle at bottom right, #8b5cf6, transparent); }
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
         .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .text-glow { text-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
@@ -36,8 +37,8 @@
     <!-- Hero Section -->
     <main class="container mx-auto px-6 py-12">
         <div class="text-center mb-16">
-            <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Tournament Leaderboard</h1>
-            <p class="text-gray-400 text-lg max-w-2xl mx-auto">Real-time statistics from the frontline of cricket. Track every run and wicket at CRIC PRO speed.</p>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-blue-200 text-glow">Tournament Leaderboard</h1>
+            <p class="text-blue-100/90 text-lg md:text-xl max-w-2xl mx-auto font-medium">Real-time statistics from the frontline of cricket. Track every run and wicket at CRIC PRO speed.</p>
         </div>
 
         <div class="grid md:grid-cols-2 gap-8 mb-16">
