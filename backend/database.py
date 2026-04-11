@@ -3,12 +3,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# SQLite database URL
-SQLALCHEMY_DATABASE_URL = "sqlite:///./cricket_tournament.db"
+# Database URL - Use environment variable for production (e.g., PostgreSQL) or fallback to local SQLite
+SQLALCHEMY_DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./cricket_tournament.db")
+
+# If SQLite is used, we need the check_same_thread=False argument
+is_sqlite = SQLALCHEMY_DATABASE_URL.startswith("sqlite")
+connect_args = {"check_same_thread": False} if is_sqlite else {}
 
 # Create the engine
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, connect_args=connect_args
 )
 
 # Create a session local class

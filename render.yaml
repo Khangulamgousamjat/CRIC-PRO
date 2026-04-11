@@ -1,0 +1,21 @@
+services:
+  # Backend FastAPI Service
+  - type: web
+    name: cric-pro-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./cricket_tournament.db
+    # This is key: it tells Render to look in the backend subfolder
+    rootDir: backend
+
+  # Frontend Static Site
+  - type: static
+    name: cric-pro-frontend
+    runtime: static
+    # Point to the frontend directory
+    publishDir: frontend
+    # Since it's a static site, there's no build command
+    buildCommand: ""
