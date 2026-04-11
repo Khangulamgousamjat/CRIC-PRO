@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Boolean, Enum
 from sqlalchemy.orm import relationship
-from .database import Base
+from database import Base
 import datetime
 
 class Admin(Base):
