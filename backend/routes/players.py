@@ -1,9 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from backend.database import get_db
-from backend.models import Player, PlayerStats
-from backend.auth import get_current_admin
+try:
+    from backend.database import get_db
+    from backend.models import Player, PlayerStats
+    from backend.auth import get_current_admin
+except ImportError:
+    from database import get_db
+    from models import Player, PlayerStats
+    from auth import get_current_admin
 from pydantic import BaseModel, field_validator
 
 router = APIRouter(prefix="/players", tags=["players"])

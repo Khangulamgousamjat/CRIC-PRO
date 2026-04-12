@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.database import get_db
-from backend.models import Match, BallByBall, PlayerStats
-from backend.auth import get_current_admin
+try:
+    from backend.database import get_db
+    from backend.models import Match, BallByBall, PlayerStats
+    from backend.auth import get_current_admin
+except ImportError:
+    from database import get_db
+    from models import Match, BallByBall, PlayerStats
+    from auth import get_current_admin
 from pydantic import BaseModel
 from typing import Optional
 
