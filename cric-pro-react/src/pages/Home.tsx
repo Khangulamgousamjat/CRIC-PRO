@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { 
     Table, 
     TableBody, 
@@ -9,8 +9,7 @@ import {
     TableHeader, 
     TableRow 
 } from "@/components/ui/table";
-import { Badge } from '@/components/ui/badge';
-import { Trophy, Zap, Target } from 'lucide-react';
+import { Trophy, TrendingUp, Target } from 'lucide-react';
 
 interface LeaderboardEntry {
     player_id: number;
@@ -30,48 +29,56 @@ const Home = () => {
         },
     });
 
-    if (isLoading) return <div className="container mx-auto p-12 text-center text-slate-400">Loading leaderboard stats...</div>;
+    if (isLoading) return (
+        <div className="flex min-h-[60vh] items-center justify-center">
+            <div className="text-zinc-500 animate-pulse font-mono text-sm tracking-widest uppercase">Initializing Dashboard...</div>
+        </div>
+    );
 
-    const topScorers = [...(leaderboard || [])].sort((a, b) => b.total_runs - a.total_runs).slice(0, 5);
-    const topBowlers = [...(leaderboard || [])].sort((a, b) => b.total_wickets - a.total_wickets).slice(0, 5);
+    const topScorers = [...(leaderboard || [])].sort((a, b) => b.total_runs - a.total_runs).slice(0, 8);
+    const topBowlers = [...(leaderboard || [])].sort((a, b) => b.total_wickets - a.total_wickets).slice(0, 8);
 
     return (
-        <div className="container mx-auto px-6 py-12">
-            {/* Hero Section */}
-            <div className="relative mb-20 text-center">
-                <div className="absolute inset-0 bg-blue-500/5 blur-[120px] -z-10 rounded-full" />
-                <h1 className="text-7xl font-black tracking-tighter text-white drop-shadow-2xl">
-                    STAT <span className="text-blue-500 italic">COMMAND</span>
+        <div className="container mx-auto px-4 py-8 lg:px-8">
+            {/* Header Section */}
+            <header className="mb-12 border-l-4 border-blue-600 pl-6 py-2">
+                <h1 className="text-4xl font-black uppercase tracking-tighter text-white sm:text-5xl">
+                    Tournament <span className="text-zinc-600">Analytics</span>
                 </h1>
-                <p className="mx-auto mt-4 max-w-xl text-lg font-medium text-slate-400">
-                    Real-time statistics from the frontline of cricket. Track every run and wicket at CRIC PRO speed.
+                <p className="mt-2 text-sm font-medium uppercase tracking-[0.2em] text-zinc-500">
+                    Frontline statistics and player performance metrics
                 </p>
-            </div>
+            </header>
 
-            <div className="grid gap-8 md:grid-cols-2">
-                {/* Top Scorers Card */}
-                <Card className="border-white/5 bg-slate-900/40 backdrop-blur-sm transition-all hover:border-blue-500/20">
-                    <CardHeader className="flex flex-row items-center justify-between pb-8">
-                        <CardTitle className="flex items-center text-2xl font-bold">
-                            <Zap className="mr-3 h-6 w-6 text-yellow-400" /> Top Scorers
+            <div className="grid gap-8 lg:grid-cols-2">
+                {/* Batting Leaderboard */}
+                <Card className="border-white/5 bg-zinc-950 shadow-none ring-1 ring-white/5">
+                    <CardHeader className="border-b border-white/5 bg-zinc-900/50 py-4">
+                        <CardTitle className="flex items-center text-xs font-bold uppercase tracking-widest text-zinc-400">
+                            <TrendingUp className="mr-2 h-4 w-4 text-blue-500" /> Leading Batsmen
                         </CardTitle>
-                        <Trophy className="h-5 w-5 text-slate-700" />
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="bg-zinc-900/30">
                                 <TableRow className="border-white/5 hover:bg-transparent">
-                                    <TableHead className="text-slate-500">PLAYER</TableHead>
-                                    <TableHead className="text-right text-slate-500">RUNS</TableHead>
-                                    <TableHead className="text-right text-slate-500">SR</TableHead>
+                                    <TableHead className="h-10 text-[10px] font-bold uppercase tracking-wider text-zinc-600">Player</TableHead>
+                                    <TableHead className="h-10 text-right text-[10px] font-bold uppercase tracking-wider text-zinc-600">Runs</TableHead>
+                                    <TableHead className="h-10 text-right text-[10px] font-bold uppercase tracking-wider text-zinc-600 whitespace-nowrap">Strike Rate</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {topScorers.map((player) => (
-                                    <TableRow key={player.player_id} className="border-white/5 hover:bg-white/5">
-                                        <TableCell className="font-bold text-white">{player.name}</TableCell>
-                                        <TableCell className="text-right font-black text-blue-400 text-lg">{player.total_runs}</TableCell>
-                                        <TableCell className="text-right text-sm text-slate-400 font-mono">{player.strike_rate}</TableCell>
+                                    <TableRow key={player.player_id} className="border-white/5 group hover:bg-white/[0.02]">
+                                        <TableCell className="py-4 font-bold text-zinc-200 group-hover:text-blue-400 transition-colors uppercase tracking-tight">
+                                            {player.name}
+                                        </TableCell>
+                                        <TableCell className="py-4 text-right font-black text-white text-lg">
+                                            {player.total_runs}
+                                        </TableCell>
+                                        <TableCell className="py-4 text-right font-mono text-xs text-zinc-500">
+                                            {player.strike_rate.toFixed(1)}
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -79,29 +86,34 @@ const Home = () => {
                     </CardContent>
                 </Card>
 
-                {/* Top Bowlers Card */}
-                <Card className="border-white/5 bg-slate-900/40 backdrop-blur-sm transition-all hover:border-purple-500/20">
-                    <CardHeader className="flex flex-row items-center justify-between pb-8">
-                        <CardTitle className="flex items-center text-2xl font-bold">
-                            <Target className="mr-3 h-6 w-6 text-purple-400" /> Top Bowlers
+                {/* Bowling Leaderboard */}
+                <Card className="border-white/5 bg-zinc-950 shadow-none ring-1 ring-white/5">
+                    <CardHeader className="border-b border-white/5 bg-zinc-900/50 py-4">
+                        <CardTitle className="flex items-center text-xs font-bold uppercase tracking-widest text-zinc-400">
+                            <Target className="mr-2 h-4 w-4 text-purple-500" /> Wicket Kings
                         </CardTitle>
-                        <Badge variant="outline" className="border-purple-500/30 text-purple-400">WICKET KINGS</Badge>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="bg-zinc-900/30">
                                 <TableRow className="border-white/5 hover:bg-transparent">
-                                    <TableHead className="text-slate-500">PLAYER</TableHead>
-                                    <TableHead className="text-right text-slate-500">WKTS</TableHead>
-                                    <TableHead className="text-right text-slate-500">ECON</TableHead>
+                                    <TableHead className="h-10 text-[10px] font-bold uppercase tracking-wider text-zinc-600">Player</TableHead>
+                                    <TableHead className="h-10 text-right text-[10px] font-bold uppercase tracking-wider text-zinc-600">Wickets</TableHead>
+                                    <TableHead className="h-10 text-right text-[10px] font-bold uppercase tracking-wider text-zinc-600 whitespace-nowrap">Economy</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {topBowlers.map((player) => (
-                                    <TableRow key={player.player_id} className="border-white/5 hover:bg-white/5">
-                                        <TableCell className="font-bold text-white">{player.name}</TableCell>
-                                        <TableCell className="text-right font-black text-purple-400 text-lg">{player.total_wickets}</TableCell>
-                                        <TableCell className="text-right text-sm text-slate-400 font-mono">{player.economy}</TableCell>
+                                    <TableRow key={player.player_id} className="border-white/5 group hover:bg-white/[0.02]">
+                                        <TableCell className="py-4 font-bold text-zinc-200 group-hover:text-purple-400 transition-colors uppercase tracking-tight">
+                                            {player.name}
+                                        </TableCell>
+                                        <TableCell className="py-4 text-right font-black text-white text-lg">
+                                            {player.total_wickets}
+                                        </TableCell>
+                                        <TableCell className="py-4 text-right font-mono text-xs text-zinc-500">
+                                            {player.economy.toFixed(2)}
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -109,6 +121,12 @@ const Home = () => {
                     </CardContent>
                 </Card>
             </div>
+            
+            {leaderboard?.length === 0 && (
+                <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-white/10 mt-12">
+                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-600">Awaiting Match Results</p>
+                </div>
+            )}
         </div>
     );
 };

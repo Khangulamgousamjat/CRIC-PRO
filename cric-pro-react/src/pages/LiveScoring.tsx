@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner";
-import { Zap, AlertTriangle, User, TrendingUp } from 'lucide-react';
+import { Zap, AlertCircle, User, Activity } from 'lucide-react';
 
 interface LiveScore {
     match_id: number;
@@ -16,12 +16,6 @@ interface LiveScore {
     team2_score: string;
     current_innings: number;
     status: string;
-}
-
-interface Player {
-    id: number;
-    name: string;
-    role: string;
 }
 
 const LiveScoring = () => {
@@ -34,8 +28,7 @@ const LiveScoring = () => {
     const [bowlerId, setBowlerId] = useState<string>('');
     const [nonStrikerId, setNonStrikerId] = useState<string>('');
 
-    // Fetch Live Score
-    const { data: score } = useQuery<LiveScore>({
+    const { data: score, isLoading: isScoreLoading } = useQuery<LiveScore>({
         queryKey: ['liveScore', matchId],
         queryFn: async () => {
             const res = await api.get(`/scoring/live/${matchId}`);
@@ -44,8 +37,7 @@ const LiveScoring = () => {
         refetchInterval: 5000,
     });
 
-    // Fetch Players for selection
-    const { data: players } = useQuery<Player[]>({
+    const { data: players } = useQuery<any[]>({
         queryKey: ['players'],
         queryFn: async () => {
             const res = await api.get('/players/');
@@ -53,199 +45,203 @@ const LiveScoring = () => {
         }
     });
 
-    // Mutation for adding a ball
     const addBallMutation = useMutation({
-        mutationFn: async (payload: any) => {
-            return api.post('/scoring/ball', payload);
-        },
+        mutationFn: async (payload: any) => api.post('/scoring/ball', payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['liveScore', matchId] });
-            toast.success('Ball added!');
+            toast.success('SCORE UPDATED');
         },
-        onError: () => toast.error('Failed to update score.')
+        onError: () => toast.error('DATA ERROR')
     });
 
     const handleAddBall = (runs: number, options: any = {}) => {
         if (!strikerId || !bowlerId || !nonStrikerId) {
-            toast.warning('Please select Striker, Bowler, and Non-Striker first!');
+            toast.warning('SELECT ACTIVE PERSONNEL FIRST');
             return;
         }
 
-        const payload = {
-            match_id: parseInt(matchId!),
-            over_no: 0, // Simplified for now
-            ball_no: 0, // Simplified for now
+        addBallMutation.mutate({
+            match_id: parseInt(matchId || '0'),
+            over_no: 0, ball_no: 0,
             batsman_id: parseInt(strikerId),
             bowler_id: parseInt(bowlerId),
             non_striker_id: parseInt(nonStrikerId),
-            runs: runs,
+            runs,
             extra_runs: options.extras || 0,
             extra_type: options.extraType || null,
             is_wicket: options.isWicket || false,
             wicket_type: options.wicketType || null
-        };
-
-        addBallMutation.mutate(payload);
+        });
     };
 
-    if (!matchId) return navigate('/matches');
+    if (isScoreLoading) return <div className="p-20 text-center font-mono text-xs uppercase tracking-[0.3em] text-zinc-600">Syncing Live Data...</div>;
+    if (!matchId) return navigate('/');
 
     return (
-        <div className="container mx-auto px-6 py-12">
-            <div className="grid gap-8 lg:grid-cols-2">
+        <div className="container mx-auto px-4 py-8 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-2">
                 {/* Scoreboard Column */}
-                <div className="space-y-6">
-                    <Card className="overflow-hidden border-blue-500/20 bg-slate-900 shadow-2xl shadow-blue-500/10">
-                        <div className="bg-blue-600/10 py-3 text-center">
-                            <span className="text-[10px] font-black tracking-[0.2em] text-blue-500 uppercase">
-                                {score?.status || 'LIVE'} • INNINGS {score?.current_innings}
-                            </span>
+                <div className="space-y-8">
+                    <Card className="rounded-none border border-white/10 bg-black shadow-2xl overflow-hidden shadow-blue-900/10">
+                        <div className="bg-zinc-900/50 px-6 py-2 border-b border-white/5 flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                </span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Match in Progress</span>
+                            </div>
+                            <span className="text-[10px] font-black uppercase text-blue-500">Innings {score?.current_innings}</span>
                         </div>
                         <CardContent className="p-12 text-center">
-                            <div className="flex items-center justify-around space-x-4">
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-bold text-slate-500 uppercase tracking-tighter">{score?.team1_name}</h3>
-                                    <div className="text-6xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                            <div className="flex flex-col space-y-8 md:flex-row md:items-center md:justify-around md:space-y-0">
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-zinc-500">{score?.team1_name}</h3>
+                                    <div className="text-7xl font-black tracking-tighter text-white sm:text-8xl">
                                         {score?.team1_score.split(' (')[0]}
                                     </div>
-                                    <div className="text-xs font-medium text-blue-400">{score?.team1_score.split(' (')[1]?.replace(')', '')}</div>
+                                    <div className="inline-block rounded-none bg-blue-600/10 px-3 py-1 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                                        {score?.team1_score.split(' (')[1]?.replace(')', '') || '0 OVER'}
+                                    </div>
                                 </div>
 
-                                <div className="text-3xl font-black italic text-slate-800">VS</div>
+                                <div className="text-2xl font-black italic text-zinc-800">VS</div>
 
-                                <div className="space-y-2">
-                                    <h3 className="text-lg font-bold text-slate-500 uppercase tracking-tighter">{score?.team2_name}</h3>
-                                    <div className="text-6xl font-black text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                                <div className="space-y-3">
+                                    <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-zinc-500">{score?.team2_name}</h3>
+                                    <div className="text-7xl font-black tracking-tighter text-white sm:text-8xl">
                                         {score?.team2_score.split(' (')[0]}
                                     </div>
-                                    <div className="text-xs font-medium text-blue-400">{score?.team2_score.split(' (')[1]?.replace(')', '')}</div>
+                                    <div className="inline-block rounded-none bg-blue-600/10 px-3 py-1 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                                        {score?.team2_score.split(' (')[1]?.replace(')', '') || '0 OVER'}
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* Admin Selection */}
+                    {/* Active Personnel Selection */}
                     {token && (
-                        <Card className="border-white/5 bg-slate-900/40 backdrop-blur-md">
-                            <CardHeader>
-                                <CardTitle className="flex items-center text-sm font-bold uppercase tracking-widest text-slate-400">
-                                    <TrendingUp className="mr-2 h-4 w-4" /> Active Selection
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-slate-500 uppercase">Striker</label>
+                        <Card className="rounded-none border-white/5 bg-zinc-950 p-6">
+                            <header className="mb-6 flex items-center justify-between border-b border-white/5 pb-4">
+                                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">Active Field Personnel</h3>
+                                <Activity className="h-3.5 w-3.5 text-zinc-700" />
+                            </header>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Striker</label>
                                     <Select value={strikerId} onValueChange={setStrikerId}>
-                                        <SelectTrigger className="border-white/5 bg-slate-800 text-white">
-                                            <SelectValue placeholder="Select Batsman" />
+                                        <SelectTrigger className="h-10 rounded-none border-white/10 bg-zinc-900 text-white font-bold uppercase text-[10px]">
+                                            <SelectValue placeholder="SELECT PLAYER" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-800 text-white">
-                                            {players?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>)}
+                                        <SelectContent className="bg-zinc-950 text-white border-white/10">
+                                            {players?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name.toUpperCase()}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-slate-500 uppercase">Non-Striker</label>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Non-Striker</label>
                                     <Select value={nonStrikerId} onValueChange={setNonStrikerId}>
-                                        <SelectTrigger className="border-white/5 bg-slate-800 text-white">
-                                            <SelectValue placeholder="Select Batsman" />
+                                        <SelectTrigger className="h-10 rounded-none border-white/10 bg-zinc-900 text-white font-bold uppercase text-[10px]">
+                                            <SelectValue placeholder="SELECT PLAYER" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-800 text-white">
-                                            {players?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>)}
+                                        <SelectContent className="bg-zinc-950 text-white border-white/10">
+                                            {players?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name.toUpperCase()}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-bold text-slate-500 uppercase">Bowler</label>
+                                <div className="space-y-2">
+                                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Bowler</label>
                                     <Select value={bowlerId} onValueChange={setBowlerId}>
-                                        <SelectTrigger className="border-white/5 bg-slate-800 text-white">
-                                            <SelectValue placeholder="Select Bowler" />
+                                        <SelectTrigger className="h-10 rounded-none border-white/10 bg-zinc-900 text-white font-bold uppercase text-[10px]">
+                                            <SelectValue placeholder="SELECT PLAYER" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-800 text-white">
-                                            {players?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>)}
+                                        <SelectContent className="bg-zinc-950 text-white border-white/10">
+                                            {players?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name.toUpperCase()}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                            </CardContent>
+                            </div>
                         </Card>
                     )}
                 </div>
 
-                {/* Scoring Actions Column */}
-                {token ? (
-                    <Card className="border-white/5 bg-slate-900/60 p-8 backdrop-blur-xl">
-                        <div className="mb-8 flex items-center space-x-3">
-                            <div className="rounded-xl bg-blue-500 p-2 text-white">
-                                <Zap className="h-6 w-6" />
-                            </div>
-                            <h2 className="text-3xl font-black italic tracking-tighter text-white">SCORING PANEL</h2>
-                        </div>
+                {/* Scoring Logic Column */}
+                <div className="space-y-8">
+                    {token ? (
+                        <Card className="rounded-none border border-white/10 bg-zinc-900/20 p-8">
+                            <header className="mb-10 flex items-center space-x-4 border-l-4 border-white pl-6">
+                                <Zap className="h-6 w-6 text-white" />
+                                <h2 className="text-4xl font-black uppercase tracking-tighter text-white">Score Control</h2>
+                            </header>
 
-                        <div className="grid grid-cols-4 gap-4">
-                            {[0, 1, 2, 3].map(run => (
-                                <Button 
-                                    key={run} 
-                                    variant="outline" 
-                                    className="h-14 rounded-2xl border-white/10 bg-white/5 text-xl font-bold transition-all hover:bg-blue-600 hover:text-white"
-                                    onClick={() => handleAddBall(run)}
-                                >
-                                    {run}
-                                </Button>
-                            ))}
-                            <Button 
-                                className="h-14 rounded-2xl bg-blue-600 text-2xl font-black text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20"
-                                onClick={() => handleAddBall(4)}
-                            >
-                                4
-                            </Button>
-                            <Button 
-                                className="h-14 rounded-2xl bg-purple-600 text-2xl font-black text-white hover:bg-purple-700 shadow-lg shadow-purple-500/20"
-                                onClick={() => handleAddBall(6)}
-                            >
-                                6
-                            </Button>
-                            <Button 
-                                variant="outline" 
-                                className="h-14 rounded-2xl border-yellow-500/50 bg-yellow-500/10 text-xl font-bold text-yellow-500 hover:bg-yellow-500 hover:text-black"
-                                onClick={() => handleAddBall(0, { extras: 1, extraType: 'wide' })}
-                            >
-                                WD
-                            </Button>
-                            <Button 
-                                variant="outline" 
-                                className="h-14 rounded-2xl border-yellow-500/50 bg-yellow-500/10 text-xl font-bold text-yellow-500 hover:bg-yellow-500 hover:text-black"
-                                onClick={() => handleAddBall(0, { extras: 1, extraType: 'noball' })}
-                            >
-                                NB
-                            </Button>
-                        </div>
-
-                        <div className="mt-12 space-y-4">
-                            <h3 className="flex items-center text-xs font-bold uppercase tracking-widest text-red-500">
-                                <AlertTriangle className="mr-2 h-4 w-4" /> WICKET ZONE
-                            </h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                {['Bowled', 'Caught', 'LBW', 'Run Out'].map(type => (
+                            <div className="grid grid-cols-4 gap-2">
+                                {[0, 1, 2, 3].map(run => (
                                     <Button 
-                                        key={type}
+                                        key={run} 
                                         variant="outline" 
-                                        className="h-14 rounded-2xl border-red-500/50 bg-red-500/5 text-sm font-bold text-red-500 hover:bg-red-600 hover:text-white"
-                                        onClick={() => handleAddBall(0, { isWicket: true, wicketType: type.toLowerCase() })}
+                                        className="h-14 rounded-none border-white/5 bg-zinc-900 text-xl font-bold transition-all hover:bg-white hover:text-black"
+                                        onClick={() => handleAddBall(run)}
                                     >
-                                        {type}
+                                        {run}
                                     </Button>
                                 ))}
+                                <Button 
+                                    className="h-14 rounded-none bg-blue-600 text-2xl font-black text-white hover:bg-blue-500"
+                                    onClick={() => handleAddBall(4)}
+                                >
+                                    4
+                                </Button>
+                                <Button 
+                                    className="h-14 rounded-none bg-zinc-100 text-2xl font-black text-black hover:bg-white"
+                                    onClick={() => handleAddBall(6)}
+                                >
+                                    6
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className="h-14 rounded-none border-blue-500/30 bg-blue-500/10 text-xs font-bold text-blue-400 hover:bg-blue-500 hover:text-white"
+                                    onClick={() => handleAddBall(0, { extras: 1, extraType: 'wide' })}
+                                >
+                                    WIDE
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className="h-14 rounded-none border-blue-500/30 bg-blue-500/10 text-xs font-bold text-blue-400 hover:bg-blue-500 hover:text-white"
+                                    onClick={() => handleAddBall(0, { extras: 1, extraType: 'noball' })}
+                                >
+                                    NO-BALL
+                                </Button>
                             </div>
+
+                            <div className="mt-16 space-y-6">
+                                <h3 className="flex items-center text-[10px] font-bold uppercase tracking-[0.3em] text-red-500">
+                                    <AlertCircle className="mr-2 h-4 w-4" /> Termination Zone
+                                </h3>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {['Bowled', 'Caught', 'LBW', 'In-Field-Out'].map(type => (
+                                        <Button 
+                                            key={type}
+                                            variant="outline" 
+                                            className="h-12 rounded-none border-red-500/20 bg-red-950/10 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                                            onClick={() => handleAddBall(0, { isWicket: true, wicketType: type })}
+                                        >
+                                            {type}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        </Card>
+                    ) : (
+                        <div className="flex h-full min-h-[400px] flex-col items-center justify-center rounded-none border border-white/5 bg-zinc-950/50 p-12 text-center">
+                            <User className="mb-6 h-16 w-16 text-zinc-800" />
+                            <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-500">Authorized Personnel Only</h2>
+                            <p className="mt-2 max-w-xs text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-700">
+                                Scoring control panel is encrypted and restricted to tournament officials.
+                            </p>
                         </div>
-                    </Card>
-                ) : (
-                    <Card className="flex items-center justify-center border-white/5 bg-slate-950/50 p-12 text-center text-slate-500">
-                        <div>
-                            <User className="mx-auto mb-4 h-12 w-12 opacity-20" />
-                            <p className="text-lg font-medium">Scoring panel is restricted to admins.</p>
-                        </div>
-                    </Card>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

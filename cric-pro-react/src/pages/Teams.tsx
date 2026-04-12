@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -27,8 +27,7 @@ const Teams = () => {
     const [teamName, setTeamName] = useState('');
     const token = localStorage.getItem('token');
 
-    // Fetch Teams
-    const { data: teams, isLoading, error } = useQuery<Team[]>({
+    const { data: teams, isLoading } = useQuery<Team[]>({
         queryKey: ['teams'],
         queryFn: async () => {
             const res = await api.get('/teams/');
@@ -36,135 +35,124 @@ const Teams = () => {
         },
     });
 
-    // Create Team Mutation
     const createTeamMutation = useMutation({
         mutationFn: async (name: string) => {
             return api.post('/teams/', { name, tournament_id: 1 });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['teams'] });
-            toast.success('Team registered successfully!');
+            toast.success('Team registered successfully');
             setIsDialogOpen(false);
             setTeamName('');
         },
-        onError: () => {
-            toast.error('Failed to register team.');
-        }
+        onError: () => toast.error('Registration failed')
     });
 
-    // Delete Team Mutation
     const deleteTeamMutation = useMutation({
         mutationFn: async (id: number) => {
             return api.delete(`/teams/${id}`);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['teams'] });
-            toast.success('Team deleted.');
+            toast.success('Team removed');
         },
-        onError: () => {
-            toast.error('Failed to delete team.');
-        }
+        onError: () => toast.error('Delete failed')
     });
 
     const handleCreateTeam = (e: React.FormEvent) => {
         e.preventDefault();
-        if (teamName.trim()) {
-            createTeamMutation.mutate(teamName);
-        }
+        if (teamName.trim()) createTeamMutation.mutate(teamName);
     };
 
-    if (isLoading) return <div className="container mx-auto p-12 text-center text-slate-400">Loading your league...</div>;
-    if (error) return <div className="container mx-auto p-12 text-center text-red-500">Error loading teams. Check backend.</div>;
+    if (isLoading) return <div className="p-20 text-center font-mono text-xs uppercase tracking-[0.3em] text-zinc-600">Accessing Database...</div>;
 
     return (
-        <div className="container mx-auto px-6 py-12">
-            <div className="mb-12 flex items-center justify-between">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tight text-white drop-shadow-sm">
-                        Registered <span className="text-blue-500 italic">Teams</span>
+        <div className="container mx-auto px-4 py-8 lg:px-8">
+            <header className="mb-12 flex flex-col justify-between space-y-4 md:flex-row md:items-end md:space-y-0">
+                <div className="border-l-4 border-white pl-6">
+                    <h1 className="text-4xl font-black uppercase tracking-tighter text-white sm:text-5xl">
+                        Roster <span className="text-zinc-600">Registry</span>
                     </h1>
-                    <p className="mt-2 text-slate-400">Manage and view all tournament participants.</p>
+                    <p className="mt-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
+                        Official tournament team logs and squad management
+                    </p>
                 </div>
 
                 {token && (
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/20">
-                                <Plus className="mr-2 h-4 w-4" /> Register New Team
+                            <Button className="h-10 rounded-none bg-blue-600 px-6 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:bg-blue-700">
+                                <Plus className="mr-2 h-3.5 w-3.5" /> Registry New Entry
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="border-white/10 bg-slate-900 text-white">
+                        <DialogContent className="border-white/5 bg-zinc-950 text-white rounded-none ring-1 ring-white/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">Register Team</DialogTitle>
+                                <DialogTitle className="text-xl font-black uppercase tracking-tight">Team Protocol</DialogTitle>
                             </DialogHeader>
                             <form onSubmit={handleCreateTeam} className="space-y-6 pt-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400">Team Name</label>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Official Team Name</label>
                                     <Input
                                         value={teamName}
                                         onChange={(e) => setTeamName(e.target.value)}
-                                        placeholder="e.g. Royal Strikers"
-                                        className="border-white/5 bg-slate-800 focus-visible:ring-blue-500"
+                                        placeholder="INPUT NAME..."
+                                        className="h-12 rounded-none border-white/10 bg-zinc-900 text-white focus-visible:ring-blue-500 uppercase font-bold"
                                         required
                                     />
                                 </div>
                                 <Button 
                                     type="submit" 
-                                    className="w-full bg-blue-600 hover:bg-blue-700"
+                                    className="w-full h-12 rounded-none bg-blue-600 font-bold uppercase tracking-[0.2em] hover:bg-blue-700"
                                     disabled={createTeamMutation.isPending}
                                 >
-                                    {createTeamMutation.isPending ? 'Registering...' : 'Complete Registration'}
+                                    {createTeamMutation.isPending ? 'Processing...' : 'Authorize Registration'}
                                 </Button>
                             </form>
                         </DialogContent>
                     </Dialog>
                 )}
-            </div>
+            </header>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-1 md:grid-cols-2 lg:grid-cols-3">
                 {teams?.map((team) => (
-                    <Card key={team.id} className="group relative overflow-hidden border-white/5 bg-slate-900/40 backdrop-blur-sm transition-all hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/5">
-                        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-                        
-                        <CardHeader className="flex flex-row items-center space-x-4">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-800 border border-white/5 text-2xl group-hover:border-blue-500/30 transition-colors">
-                                <Shield className="h-7 w-7 text-blue-500" />
+                    <Card key={team.id} className="rounded-none border-white/5 bg-zinc-900/40 transition-all hover:bg-zinc-900 shadow-none hover:ring-1 hover:ring-white/20">
+                        <CardHeader className="flex flex-row items-center space-x-6 py-6">
+                            <div className="flex h-14 w-14 items-center justify-center bg-zinc-950 border border-white/5 text-blue-500">
+                                <Shield className="h-7 w-7" />
                             </div>
-                            <div>
-                                <CardTitle className="text-xl font-bold text-white transition-colors group-hover:text-blue-400">
+                            <div className="flex-1 overflow-hidden">
+                                <CardTitle className="truncate text-lg font-black uppercase tracking-tight text-white">
                                     {team.name}
                                 </CardTitle>
-                                <Badge variant="secondary" className="mt-1 bg-white/5 text-[10px] text-slate-400">
-                                    TOURNAMENT #{team.tournament_id}
+                                <Badge variant="outline" className="mt-1 border-white/10 bg-transparent px-2 py-0 text-[9px] font-bold tracking-widest text-zinc-500 uppercase">
+                                    ID: {team.id.toString().padStart(3, '0')}
                                 </Badge>
                             </div>
                         </CardHeader>
                         
-                        <CardFooter className="flex justify-between border-t border-white/5 bg-white/2 transition-colors group-hover:bg-white/5 pt-4">
-                            <div className="flex items-center space-x-2 text-sm text-slate-400">
-                                <Users className="h-4 w-4" />
-                                <span>Squad View</span>
+                        <CardFooter className="flex justify-between border-t border-white/5 bg-black/20 py-4 px-6">
+                            <div className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+                                <Users className="h-3.5 w-3.5" />
+                                <span>Verified Squad</span>
                             </div>
-                            <div className="flex space-x-2">
-                                {token && (
-                                    <Button 
-                                        variant="ghost" 
-                                        size="icon" 
-                                        className="h-8 w-8 text-slate-500 hover:bg-red-500/20 hover:text-red-500"
-                                        onClick={() => deleteTeamMutation.mutate(team.id)}
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                )}
-                            </div>
+                            {token && (
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-8 w-8 text-zinc-700 hover:bg-red-950/30 hover:text-red-500"
+                                    onClick={() => deleteTeamMutation.mutate(team.id)}
+                                >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                            )}
                         </CardFooter>
                     </Card>
                 ))}
             </div>
 
             {teams?.length === 0 && (
-                <div className="rounded-3xl border border-dashed border-white/10 py-20 text-center">
-                    <p className="text-xl font-medium text-slate-500">No teams found in the archives.</p>
+                <div className="flex h-40 items-center justify-center border border-dashed border-white/10">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-700">Database Entry Null - Awaiting Records</p>
                 </div>
             )}
         </div>
