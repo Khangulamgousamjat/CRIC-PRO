@@ -5,8 +5,12 @@ from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from backend.database import get_db
-from backend.models import Admin
+try:
+    from backend.database import get_db
+    from backend.models import Admin
+except ImportError:
+    from database import get_db
+    from models import Admin
 
 # --- CONFIGURATION (API KEYS & SECRETS) ---
 # Uses environment variable in production, falls back to dev key locally

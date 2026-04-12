@@ -1,7 +1,11 @@
 from fastapi import FastAPI
-from backend.database import engine, Base
-from backend.routes import auth, teams, players, matches, scoring, stats
 from fastapi.middleware.cors import CORSMiddleware
+try:
+    from backend.database import engine, Base
+    from backend.routes import auth, teams, players, matches, scoring, stats
+except ImportError:
+    from database import engine, Base
+    from routes import auth, teams, players, matches, scoring, stats
 
 # Initialize the database
 Base.metadata.create_all(bind=engine)
