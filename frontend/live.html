@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #0f172a; color: #f8fafc; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        body { font-family: 'Outfit', sans-serif; background: #080808; color: #ffffff; }
+        .glass { background: rgba(13, 13, 13, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
         .btn-action { @apply bg-slate-800 border border-slate-700 py-3 px-6 rounded-2xl hover:bg-slate-700 transition font-bold text-center; }
         .score-box { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid #3b82f6; }
     </style>
@@ -28,7 +28,7 @@
         <!-- Dashboard / Scoreboard -->
         <div class="space-y-6">
             <div id="live-scoreboard" class="glass score-box p-12 rounded-[3rem] text-center shadow-2xl shadow-blue-500/10">
-                <div id="match-status" class="text-red-500 text-sm font-bold uppercase tracking-widest mb-4">LIVE • T20 CRICKET</div>
+                <div id="match-status" class="text-red-500 text-sm font-bold uppercase tracking-widest mb-4">LIVE â€¢ T20 CRICKET</div>
                 <div class="flex justify-around items-center mb-8">
                     <div class="text-center">
                         <div id="team1-name" class="text-xl font-bold text-gray-400">Team 1</div>
@@ -70,7 +70,7 @@
         <!-- Scoring Panel (Admin Actions) -->
         <div class="glass p-8 rounded-[3rem] space-y-8">
             <h2 class="text-3xl font-bold flex items-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                ⚡ SCORING PANEL
+                âš¡ SCORING PANEL
             </h2>
 
             <div class="grid grid-cols-4 gap-4" id="runs-panel">
@@ -85,7 +85,7 @@
             </div>
 
             <div class="border-t border-white/5 pt-8">
-                <h3 class="text-xl font-bold text-red-500 mb-4">🚨 OUT!</h3>
+                <h3 class="text-xl font-bold text-red-500 mb-4">ðŸš¨ OUT!</h3>
                 <div class="grid grid-cols-2 gap-4">
                     <button onclick="addWicket('bowled')" class="bg-red-600/10 border border-red-500/50 text-red-500 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition">Bowled</button>
                     <button onclick="addWicket('caught')" class="bg-red-600/10 border border-red-500/50 text-red-500 py-3 rounded-2xl font-bold hover:bg-red-600 hover:text-white transition">Caught</button>
@@ -122,7 +122,7 @@
                 document.getElementById('team1-overs').innerText = t1[1].replace(')', '');
                 document.getElementById('team2-score').innerText = t2[0];
                 document.getElementById('team2-overs').innerText = t2[1].replace(')', '');
-                document.getElementById('match-status').innerText = `LIVE • INNINGS ${data.current_innings}`;
+                document.getElementById('match-status').innerText = `LIVE â€¢ INNINGS ${data.current_innings}`;
 
                 // Sync local state for scorer
                 const currentOversText = data.current_innings === 1 ? t1[1] : t2[1];
@@ -200,3 +200,4 @@
     </script>
 </body>
 </html>
+
