@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from database import get_db
-from models import Match
-from auth import get_current_admin
+from backend.database import get_db
+from backend.models import Match
+from backend.auth import get_current_admin
 from pydantic import BaseModel
 from datetime import datetime
 

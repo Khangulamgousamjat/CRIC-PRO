@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from database import get_db
-from models import PlayerStats, Player
+from backend.database import get_db
+from backend.models import PlayerStats, Player
 from typing import List
 from pydantic import BaseModel
 

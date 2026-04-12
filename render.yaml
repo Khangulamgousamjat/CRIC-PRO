@@ -4,14 +4,12 @@ services:
     name: cric-pro-backend
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         value: sqlite:///./cricket_tournament.db
-      - key: PYTHONPATH
-        value: .
-    # This is key: it tells Render to look in the backend subfolder
-    rootDir: backend
+      - key: SECRET_KEY
+        value: supersecretkey_change_me_in_production
 
   # Frontend Static Site
   - type: static

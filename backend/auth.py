@@ -1,15 +1,16 @@
 import bcrypt
+import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from database import get_db
-from models import Admin
+from backend.database import get_db
+from backend.models import Admin
 
 # --- CONFIGURATION (API KEYS & SECRETS) ---
-# In production, use environment variables!
-SECRET_KEY = "YOUR_SUPER_SECRET_KEY_HERE" 
+# Uses environment variable in production, falls back to dev key locally
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev_secret_key_do_not_use_in_production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

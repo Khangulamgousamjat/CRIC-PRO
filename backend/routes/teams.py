@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from database import get_db
-from models import Team
-from auth import get_current_admin
+from backend.database import get_db
+from backend.models import Team
+from backend.auth import get_current_admin
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/teams", tags=["teams"])
