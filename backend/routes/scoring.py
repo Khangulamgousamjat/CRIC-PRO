@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+﻿from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 try:
     from backend.database import get_db
@@ -110,3 +110,4 @@ async def get_live_score(match_id: int, db: Session = Depends(get_db)):
         "current_innings": match.current_innings,
         "status": match.status
     }
+

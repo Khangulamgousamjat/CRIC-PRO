@@ -1,11 +1,20 @@
+﻿import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+# Universal import bridge
 try:
     from backend.database import engine, Base
     from backend.routes import auth, teams, players, matches, scoring, stats
 except ImportError:
-    from database import engine, Base
-    from routes import auth, teams, players, matches, scoring, stats
+    try:
+        from database import engine, Base
+        from routes import auth, teams, players, matches, scoring, stats
+    except ImportError:
+        import sys
+        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+        from database import engine, Base
+        from routes import auth, teams, players, matches, scoring, stats
 
 # Initialize the database
 Base.metadata.create_all(bind=engine)
@@ -31,11 +40,10 @@ app.include_router(stats.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to CRIC PRO API. Visit /docs for Swagger UI."}
+    return {"message": "Welcome to CRIC PRO API. Backend is fully stabilized."}
 
 if __name__ == "__main__":
     import uvicorn
-    import os
-    # For production, we use the PORT env var provided by the hosting service
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 try:
     from backend.database import get_db
@@ -35,3 +35,4 @@ async def get_leaderboard(db: Session = Depends(get_db)):
             "economy": stat.economy
         })
     return leaderboard
+

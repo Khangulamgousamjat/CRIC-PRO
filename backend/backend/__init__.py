@@ -1,4 +1,4 @@
-try:
+﻿try:
     from ..main import app
 except (ImportError, ValueError):
     try:
@@ -8,3 +8,4 @@ except (ImportError, ValueError):
         import os
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         from main import app
+

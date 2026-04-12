@@ -1,4 +1,4 @@
-import bcrypt
+﻿import bcrypt
 import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -53,3 +53,4 @@ async def get_current_admin(token: str = Depends(oauth2_scheme), db: Session = D
     if admin is None:
         raise credentials_exception
     return admin
+

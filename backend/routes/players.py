@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+﻿from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 try:
@@ -90,3 +90,4 @@ async def delete_player(player_id: int, db: Session = Depends(get_db), current_a
     db.delete(db_player)
     db.commit()
     return {"message": "Player deleted"}
+

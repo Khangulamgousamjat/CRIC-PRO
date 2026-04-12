@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Boolean, Enum
+﻿from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Boolean, Enum
 from sqlalchemy.orm import relationship
 from database import Base
 import datetime
@@ -94,3 +94,4 @@ class PlayerStats(Base):
     average = Column(Float, default=0.0)
     strike_rate = Column(Float, default=0.0)
     player = relationship("Player", back_populates="stats")
+

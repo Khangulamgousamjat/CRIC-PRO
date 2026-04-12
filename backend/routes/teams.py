@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+﻿from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 try:
@@ -63,3 +63,4 @@ async def delete_team(team_id: int, db: Session = Depends(get_db), current_admin
     db.delete(db_team)
     db.commit()
     return {"message": "Team deleted"}
+

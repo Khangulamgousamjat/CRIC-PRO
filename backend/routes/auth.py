@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+﻿from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 try:
@@ -44,3 +44,4 @@ async def setup_admin(admin_data: AdminCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_admin)
     return {"message": "Admin created successfully"}
+
