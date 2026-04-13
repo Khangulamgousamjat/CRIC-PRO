@@ -11,8 +11,6 @@
     <style>
         body { font-family: 'Outfit', sans-serif; background: #050505; color: #ffffff; overflow-x: hidden; }
         .glass { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .sidebar-link { @apply flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 text-gray-400 hover:text-white; }
-        .sidebar-link.active { @apply bg-blue-600/10 text-blue-400 border border-blue-600/20; }
         .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-hover:hover { transform: translateY(-8px) scale(1.01); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.2); }
         .hero-title { letter-spacing: -0.05em; line-height: 0.9; }
@@ -24,29 +22,29 @@
     <aside class="glass fixed left-0 top-0 h-screen w-72 z-50 flex flex-col p-8 border-r border-white/5">
         <a href="index.html" class="text-3xl font-bold tracking-tight mb-12 px-4">CRIC <span class="text-blue-500">PRO</span></a>
         
-        <nav class="flex-1 space-y-2">
-            <a href="index.html" class="sidebar-link active">
+        <nav class="flex-1 flex flex-col space-y-3">
+            <a href="index.html" class="flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 bg-blue-600/10 text-blue-400 border border-blue-600/20 w-full">
                 <span class="text-xl">🏠</span>
-                <span class="font-semibold">Home</span>
+                <span class="font-semibold text-lg tracking-wide">Home</span>
             </a>
-            <a href="teams.html" class="sidebar-link">
+            <a href="teams.html" class="flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 text-gray-400 hover:text-white w-full">
                 <span class="text-xl">🛡️</span>
-                <span class="font-semibold">Teams</span>
+                <span class="font-semibold text-lg tracking-wide">Teams</span>
             </a>
-            <a href="players.html" class="sidebar-link">
+            <a href="players.html" class="flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 text-gray-400 hover:text-white w-full">
                 <span class="text-xl">👤</span>
-                <span class="font-semibold">Players</span>
+                <span class="font-semibold text-lg tracking-wide">Players</span>
             </a>
-            <a href="matches.html" class="sidebar-link">
+            <a href="matches.html" class="flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 text-gray-400 hover:text-white w-full">
                 <span class="text-xl">🏏</span>
-                <span class="font-semibold">Matches</span>
+                <span class="font-semibold text-lg tracking-wide">Matches</span>
             </a>
         </nav>
 
         <div class="mt-auto pt-8 border-t border-white/5">
-            <a href="admin.html" class="flex items-center space-x-4 px-6 py-4 rounded-3xl bg-blue-600 hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-600/20">
-                <span>⚡</span>
-                <span>Admin Panel</span>
+            <a href="admin.html" class="flex items-center justify-center space-x-3 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-600/20 w-full group">
+                <span class="text-xl group-hover:scale-110 transition duration-300">⚡</span>
+                <span class="tracking-tight uppercase text-sm">Admin Panel</span>
             </a>
         </div>
     </aside>
