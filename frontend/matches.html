@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -104,7 +104,7 @@
                                 <span class="text-gray-600">VS</span>
                                 <span>${m.team2_name}</span>
                             </div>
-                            <div class="text-gray-400 mt-2">ðŸ“ ${m.venue} | ðŸ“… ${new Date(m.match_date).toLocaleString()}</div>
+                            <div class="text-gray-400 mt-2">📍 ${m.venue} | 🗓️ ${new Date(m.match_date).toLocaleString()}</div>
                         </div>
                         <div class="flex space-x-4">
                             ${m.status === 'live' ? `<a href="live.html?match=${m.id}" class="bg-red-600/20 text-red-500 border border-red-500/30 px-6 py-2 rounded-xl hover:bg-red-600 transition hover:text-white font-bold">Watch Live</a>` : ''}

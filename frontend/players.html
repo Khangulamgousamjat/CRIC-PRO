@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -96,7 +96,7 @@
                 grid.innerHTML = players.map(p => `
                     <div class="glass p-6 rounded-2xl flex justify-between items-center border border-white/5 bg-white/5 group">
                         <div class="flex items-center space-x-4">
-                            <div class="h-10 w-10 flex items-center justify-center bg-purple-500/10 rounded-xl text-xl">ðŸ‘¤</div>
+                            <div class="h-10 w-10 flex items-center justify-center bg-purple-500/10 rounded-xl text-xl">👤</div>
                             <div>
                                 <h3 class="text-xl font-bold">${p.name}</h3>
                                 <p class="text-gray-400 text-sm">${p.role}</p>
@@ -104,7 +104,7 @@
                         </div>
                         <div class="flex items-center space-x-4">
                             <div class="text-blue-400 font-semibold text-xs bg-blue-500/10 px-3 py-1 rounded-full">ID: ${p.team_id}</div>
-                            ${token ? `<button onclick="deletePlayer(${p.id})" class="text-red-500 hover:text-red-400 transition opacity-0 group-hover:opacity-100 font-bold">âœ• Tag</button>` : ''}
+                            ${token ? `<button onclick="deletePlayer(${p.id})" class="text-red-500 hover:text-red-400 transition opacity-0 group-hover:opacity-100 font-bold">✖ Tag</button>` : ''}
                         </div>
                     </div>
                 `).join('') || '<p class="text-gray-500">No players registered yet.</p>';
