@@ -7,12 +7,44 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #050505; color: #ffffff; }
+        body { font-family: 'Outfit', sans-serif; background: #050505; color: #ffffff; overflow-x: hidden; }
         .glass { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .sidebar-link { @apply flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 text-gray-400 hover:text-white; }
+        .sidebar-link.active { @apply bg-blue-600/10 text-blue-400 border border-blue-600/20; }
         .btn-gradient { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 to-blue-900">
+<body class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 to-blue-900 overflow-x-hidden">
+    <!-- Sidebar (Hidden by default, shown on dashboard) -->
+    <aside id="sidebar" class="glass hidden fixed left-0 top-0 h-screen w-72 z-50 flex flex-col p-8 border-r border-white/5">
+        <a href="index.html" class="text-3xl font-bold tracking-tight mb-12 px-4">CRIC <span class="text-blue-500">PRO</span></a>
+        
+        <nav class="flex-1 space-y-2">
+            <a href="index.html" class="sidebar-link">
+                <span class="text-xl">🏠</span>
+                <span class="font-semibold">Home</span>
+            </a>
+            <a href="teams.html" class="sidebar-link">
+                <span class="text-xl">🛡️</span>
+                <span class="font-semibold">Teams</span>
+            </a>
+            <a href="players.html" class="sidebar-link">
+                <span class="text-xl">👤</span>
+                <span class="font-semibold">Players</span>
+            </a>
+            <a href="matches.html" class="sidebar-link">
+                <span class="text-xl">🏏</span>
+                <span class="font-semibold">Matches</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-8 border-t border-white/5">
+            <a href="admin.html" class="flex items-center space-x-4 px-6 py-4 rounded-3xl bg-blue-600 hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-600/20 active">
+                <span>⚡</span>
+                <span>Admin Panel</span>
+            </a>
+        </div>
+    </aside>
     
     <div id="login-container" class="glass w-full max-w-md p-10 rounded-[2.5rem] text-center shadow-2xl">
         <h1 class="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-blue-200">Admin Panel</h1>
@@ -33,9 +65,15 @@
             <p id="login-error" class="text-red-400 text-sm italic"></p>
             <button type="submit" class="w-full btn-gradient py-4 rounded-2xl font-bold text-lg hover:scale-[1.02] transition duration-300">Authorize Session</button>
         </form>
+        <div class="mt-8 text-center">
+            <a href="index.html" class="inline-flex items-center space-x-2 text-gray-500 hover:text-white transition text-sm">
+                <span>←</span>
+                <span>Back to Public Home</span>
+            </a>
+        </div>
     </div>
 
-    <div id="dashboard-container" class="hidden w-full max-w-5xl space-y-8 animate-in fade-in duration-500">
+    <div id="dashboard-container" class="hidden w-full ml-72 p-12 space-y-8 animate-in fade-in duration-500 min-h-screen">
         <div class="flex justify-between items-center bg-white/5 p-8 rounded-3xl backdrop-blur-md border border-white/5">
             <div>
                 <h1 class="text-3xl font-bold">Welcome, <span class="text-blue-400" id="admin-name">Admin</span></h1>
@@ -61,13 +99,6 @@
                 <p class="text-gray-400 text-sm">Create match fixtures and manage live status.</p>
             </a>
         </div>
-
-        <div class="text-center">
-            <a href="index.html" class="inline-flex items-center space-x-2 text-gray-500 hover:text-white transition">
-                <span>←</span>
-                <span>Back to Public Home</span>
-            </a>
-        </div>
     </div>
 
     <script type="module">
@@ -81,6 +112,8 @@
         if (token) {
             loginContainer.classList.add('hidden');
             dashboardContainer.classList.remove('hidden');
+            document.body.classList.remove('flex', 'items-center', 'justify-center');
+            document.getElementById('sidebar').classList.remove('hidden');
         }
 
         loginForm.addEventListener('submit', async (e) => {

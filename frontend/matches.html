@@ -7,26 +7,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #080808; color: #ffffff; }
-        .glass { background: rgba(13, 13, 13, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        body { font-family: 'Outfit', sans-serif; background: #050505; color: #ffffff; overflow-x: hidden; }
+        .glass { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.08); shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .sidebar-link { @apply flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300 hover:bg-white/5 text-gray-400 hover:text-white; }
+        .sidebar-link.active { @apply bg-blue-600/10 text-blue-400 border border-blue-600/20; }
         .card-match { position: relative; overflow: hidden; }
         .card-match::before { content: ''; position: absolute; top:0; left:0; width:4px; height:100%; background: #3b82f6; }
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Navbar -->
-    <nav class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
-        <div class="text-2xl font-bold tracking-tight">CRIC <span class="text-blue-500">PRO</span></div>
-        <div class="space-x-8 hidden md:flex items-center">
-            <a href="index.html" class="hover:text-blue-400 transition">Home</a>
-            <a href="teams.html" class="hover:text-blue-400 transition">Teams</a>
-            <a href="players.html" class="hover:text-blue-400 transition">Players</a>
-            <a href="matches.html" class="text-blue-400 font-semibold border-b-2 border-blue-500 pb-1">Matches</a>
-            <a href="admin.html" class="bg-blue-600 px-5 py-2 rounded-full hover:bg-blue-700 transition">Admin Panel</a>
-        </div>
-    </nav>
+    <!-- Sidebar -->
+    <aside class="glass fixed left-0 top-0 h-screen w-72 z-50 flex flex-col p-8 border-r border-white/5">
+        <a href="index.html" class="text-3xl font-bold tracking-tight mb-12 px-4">CRIC <span class="text-blue-500">PRO</span></a>
+        
+        <nav class="flex-1 space-y-2">
+            <a href="index.html" class="sidebar-link">
+                <span class="text-xl">🏠</span>
+                <span class="font-semibold">Home</span>
+            </a>
+            <a href="teams.html" class="sidebar-link">
+                <span class="text-xl">🛡️</span>
+                <span class="font-semibold">Teams</span>
+            </a>
+            <a href="players.html" class="sidebar-link">
+                <span class="text-xl">👤</span>
+                <span class="font-semibold">Players</span>
+            </a>
+            <a href="matches.html" class="sidebar-link active">
+                <span class="text-xl">🏏</span>
+                <span class="font-semibold">Matches</span>
+            </a>
+        </nav>
 
-    <main class="container mx-auto px-6 py-12">
+        <div class="mt-auto pt-8 border-t border-white/5">
+            <a href="admin.html" class="flex items-center space-x-4 px-6 py-4 rounded-3xl bg-blue-600 hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-600/20">
+                <span>⚡</span>
+                <span>Admin Panel</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-72 p-12">
         <div class="flex flex-col md:flex-row justify-between items-start gap-12">
             <!-- Matches List -->
             <div id="matches-list-container" class="w-full">
