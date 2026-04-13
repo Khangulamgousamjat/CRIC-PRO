@@ -32,8 +32,14 @@
             <div id="teams-list-container" class="w-full">
                 <h1 class="text-4xl font-bold mb-8 italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-300 to-white drop-shadow-sm">Registered Teams</h1>
                 <div id="teams-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Dynamic Data -->
-                    <p class="text-gray-500">Loading teams...</p>
+                    <!-- Skeleton Loaders -->
+                    <div class="animate-pulse glass p-6 rounded-2xl border-l-4 border-slate-700">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="h-12 w-12 bg-slate-700/50 rounded-full"></div>
+                            <div class="h-4 bg-slate-700/50 rounded w-1/2"></div>
+                        </div>
+                        <div class="h-3 bg-slate-700/50 rounded w-1/4"></div>
+                    </div>
                 </div>
             </div>
 
@@ -76,6 +82,11 @@
         async function fetchTeams() {
             try {
                 const response = await fetch(`${CONFIG.API_BASE_URL}/teams/`);
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'admin.html';
+                    return;
+                }
                 const data = await response.json();
                 
                 const grid = document.getElementById('teams-grid');
@@ -104,6 +115,11 @@
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (res.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'admin.html';
+                    return;
+                }
                 if (res.ok) fetchTeams();
                 else alert("Failed to delete. Check if team has active matches.");
             } catch (err) { console.error(err); }
@@ -133,6 +149,12 @@
                     },
                     body: JSON.stringify(teamData)
                 });
+
+                if (res.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'admin.html';
+                    return;
+                }
 
                 if (res.ok) {
                     document.getElementById('add-team-form').reset();

@@ -1,4 +1,4 @@
-﻿from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Boolean, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float, Boolean, Enum
 from sqlalchemy.orm import relationship
 from database import Base
 import datetime
@@ -22,7 +22,7 @@ class Team(Base):
     __tablename__ = "teams"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    tournament_id = Column(Integer, ForeignKey("tournaments.id"))
+    tournament_id = Column(Integer, ForeignKey("tournaments.id"), index=True)
     tournament = relationship("Tournament", back_populates="teams")
     players = relationship("Player", back_populates="team")
 
@@ -31,19 +31,19 @@ class Player(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     role = Column(String) # Batsman, Bowler, All-rounder, Wicketkeeper
-    team_id = Column(Integer, ForeignKey("teams.id"))
+    team_id = Column(Integer, ForeignKey("teams.id"), index=True)
     team = relationship("Team", back_populates="players")
     stats = relationship("PlayerStats", back_populates="player", uselist=False)
 
 class Match(Base):
     __tablename__ = "matches"
     id = Column(Integer, primary_key=True, index=True)
-    team1_id = Column(Integer, ForeignKey("teams.id"))
-    team2_id = Column(Integer, ForeignKey("teams.id"))
-    match_date = Column(DateTime, default=datetime.datetime.utcnow)
+    team1_id = Column(Integer, ForeignKey("teams.id"), index=True)
+    team2_id = Column(Integer, ForeignKey("teams.id"), index=True)
+    match_date = Column(DateTime, default=datetime.datetime.utcnow, index=True)
     venue = Column(String)
-    status = Column(String, default="upcoming") # upcoming, live, finished
-    winner_id = Column(Integer, ForeignKey("teams.id"), nullable=True)
+    status = Column(String, default="upcoming", index=True) # upcoming, live, finished
+    winner_id = Column(Integer, ForeignKey("teams.id"), nullable=True, index=True)
     
     team1 = relationship("Team", foreign_keys=[team1_id])
     team2 = relationship("Team", foreign_keys=[team2_id])
@@ -64,12 +64,12 @@ class Match(Base):
 class BallByBall(Base):
     __tablename__ = "balls"
     id = Column(Integer, primary_key=True, index=True)
-    match_id = Column(Integer, ForeignKey("matches.id"))
+    match_id = Column(Integer, ForeignKey("matches.id"), index=True)
     over_no = Column(Integer)
     ball_no = Column(Integer)
-    bowler_id = Column(Integer, ForeignKey("players.id"))
-    batsman_id = Column(Integer, ForeignKey("players.id"))
-    non_striker_id = Column(Integer, ForeignKey("players.id"))
+    bowler_id = Column(Integer, ForeignKey("players.id"), index=True)
+    batsman_id = Column(Integer, ForeignKey("players.id"), index=True)
+    non_striker_id = Column(Integer, ForeignKey("players.id"), index=True)
     runs = Column(Integer)
     is_wicket = Column(Boolean, default=False)
     wicket_type = Column(String, nullable=True)
@@ -80,7 +80,7 @@ class BallByBall(Base):
 class PlayerStats(Base):
     __tablename__ = "player_stats"
     id = Column(Integer, primary_key=True, index=True)
-    player_id = Column(Integer, ForeignKey("players.id"))
+    player_id = Column(Integer, ForeignKey("players.id"), index=True)
     matches_played = Column(Integer, default=0)
     total_runs = Column(Integer, default=0)
     total_wickets = Column(Integer, default=0)

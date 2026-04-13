@@ -32,7 +32,13 @@
             <div id="matches-list-container" class="w-full">
                 <h1 class="text-4xl font-bold mb-8 italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-300 to-white drop-shadow-sm">Upcoming & Live Matches</h1>
                 <div id="matches-list" class="space-y-6">
-                    <p class="text-gray-400">Loading matches...</p>
+                    <!-- Skeleton Loader -->
+                    <div class="animate-pulse glass p-6 rounded-2xl border-l-4 border-slate-700 bg-white/5 flex flex-col md:flex-row justify-between items-center">
+                        <div class="flex-1 space-y-4">
+                            <div class="h-4 bg-slate-700/50 rounded w-1/4"></div>
+                            <div class="h-8 bg-slate-700/50 rounded w-3/4"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -84,16 +90,28 @@
 
         async function init() {
             try {
-                const teamResp = await fetch(`${CONFIG.API_BASE_URL}/teams/`);
-                const teams = await teamResp.json();
+                // Parallel fetching for extreme speed
+                const [teamResp, matchResp] = await Promise.all([
+                    fetch(`${CONFIG.API_BASE_URL}/teams/`),
+                    fetch(`${CONFIG.API_BASE_URL}/matches/`)
+                ]);
+
+                if (teamResp.status === 401 || matchResp.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'admin.html';
+                    return;
+                }
+
+                const [teams, matches] = await Promise.all([
+                    teamResp.json(),
+                    matchResp.json()
+                ]);
+
                 ['team1-id', 'team2-id'].forEach(id => {
                     const el = document.getElementById(id);
                     el.innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('') || '<option value="">No Teams</option>';
                 });
 
-                // --- API GET MATCHES ---
-                const matchResp = await fetch(`${CONFIG.API_BASE_URL}/matches/`);
-                const matches = await matchResp.json();
                 const list = document.getElementById('matches-list');
                 list.innerHTML = matches.map(m => `
                     <div class="glass p-6 rounded-2xl border-l-4 ${m.status === 'live' ? 'border-red-500' : 'border-blue-500'} flex flex-col md:flex-row justify-between items-center bg-white/5">
@@ -134,6 +152,11 @@
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify(matchData)
                 });
+                if (res.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'admin.html';
+                    return;
+                }
                 if (res.ok) { document.getElementById('add-match-form').reset(); init(); }
                 else { errorEl.innerText = "Failed to create match."; }
             } catch (err) { errorEl.innerText = "Connection error."; }

@@ -1,4 +1,4 @@
-﻿import bcrypt
+import bcrypt
 import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -16,7 +16,7 @@ except ImportError:
 # Uses environment variable in production, falls back to dev key locally
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev_secret_key_do_not_use_in_production")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -31,7 +31,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

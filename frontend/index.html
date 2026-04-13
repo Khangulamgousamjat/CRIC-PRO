@@ -9,10 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #080808; color: #ffffff; }
-        .glass { background: rgba(13, 13, 13, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
-        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; border-color: rgba(59, 130, 246, 0.3); }
-        .hero-title { letter-spacing: -0.05em; }
+        body { font-family: 'Outfit', sans-serif; background: #050505; color: #ffffff; }
+        .glass { background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-8px) scale(1.01); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.2); }
+        .hero-title { letter-spacing: -0.05em; line-height: 0.9; }
+        .text-gradient { background: linear-gradient(to bottom right, #fff 30%, #555 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -48,12 +50,13 @@
                     <span class="text-blue-500 text-3xl">🏆</span>
                 </div>
                 <div id="scorers-list" class="space-y-4">
-                    <!-- Dynamic Data -->
-                    <div class="animate-pulse flex items-center space-x-4">
-                        <div class="rounded-full bg-slate-700 h-10 w-10"></div>
-                        <div class="flex-1 space-y-6 py-1">
-                            <div class="h-2 bg-slate-700 rounded"></div>
+                    <!-- Skeleton Cards -->
+                    <div class="animate-pulse flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                        <div class="flex items-center space-x-4">
+                            <div class="rounded-full bg-slate-700/50 h-10 w-10"></div>
+                            <div class="h-4 bg-slate-700/50 rounded w-24"></div>
                         </div>
+                        <div class="h-6 bg-slate-700/50 rounded w-12"></div>
                     </div>
                 </div>
             </div>
@@ -65,12 +68,13 @@
                     <span class="text-purple-500 text-3xl">🧿</span>
                 </div>
                 <div id="bowlers-list" class="space-y-4">
-                    <!-- Dynamic Data -->
-                    <div class="animate-pulse flex items-center space-x-4">
-                        <div class="rounded-full bg-slate-700 h-10 w-10"></div>
-                        <div class="flex-1 space-y-6 py-1">
-                            <div class="h-2 bg-slate-700 rounded"></div>
+                    <!-- Skeleton Cards -->
+                    <div class="animate-pulse flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                        <div class="flex items-center space-x-4">
+                            <div class="rounded-full bg-slate-700/50 h-10 w-10"></div>
+                            <div class="h-4 bg-slate-700/50 rounded w-24"></div>
                         </div>
+                        <div class="h-6 bg-slate-700/50 rounded w-12"></div>
                     </div>
                 </div>
             </div>
