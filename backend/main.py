@@ -1,4 +1,4 @@
-﻿import os
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -18,6 +18,39 @@ except ImportError:
 
 # Initialize the database
 Base.metadata.create_all(bind=engine)
+
+# --- DEFAULT ADMIN SETUP ---
+def create_default_admin():
+    from database import SessionLocal
+    from models import Admin
+    from auth import get_password_hash
+    
+    db = SessionLocal()
+    try:
+        admin_username = "admin"
+        admin_password = "Pass@123"
+        hashed_password = get_password_hash(admin_password)
+        
+        admin = db.query(Admin).filter(Admin.username == admin_username).first()
+        if admin:
+            # Update existing admin to ensure it's permanent
+            admin.hashed_password = hashed_password
+            db.commit()
+            print(f"Default admin '{admin_username}' updated with permanent password.")
+        else:
+            # Create new admin
+            new_admin = Admin(username=admin_username, hashed_password=hashed_password)
+            db.add(new_admin)
+            db.commit()
+            print(f"Default admin '{admin_username}' created successfully.")
+    except Exception as e:
+        print(f"Error creating/updating default admin: {e}")
+        db.rollback()
+    finally:
+        db.close()
+
+# Run admin setup
+create_default_admin()
 
 app = FastAPI(title="CRIC PRO API", description="Cricket Tournament Management System Backend")
 
